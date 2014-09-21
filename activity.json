@@ -1,0 +1,42 @@
+{
+  "boards": [
+    {
+      "title": "main",
+      "options": [
+        {
+          "title": "Yo",
+          "image": "VARIOS/yo.png"
+        },
+
+        {
+          "title": "No quiero",
+          "image": "ACCIONES/no_quiero.png"
+        },
+
+        {
+          "title": "Hacer la cama",
+          "image": "hacer_la_cama.png"
+        },
+        {
+          "title": "Hacer cosquillas",
+          "image": "ACCIONES/hacer_cosquillas.png"
+        },
+
+        {
+          "title": "Hacer clic",
+          "image": "hacer_clic.png"
+        },
+
+        {
+          "title": "Hacer las compras",
+          "image": "ACCIONES/hacer la compra.png"
+        }
+      ]
+    }
+  ],
+  "configs": {
+    "separation": 10,
+    "max_per_line": 3,
+    "lines": 2
+  }
+}

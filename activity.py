@@ -1,4 +1,4 @@
-# Copyright 2009 Simon Schampijer
+# Copyright 2014 Daniel Francis
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,33 +14,85 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-"""HelloWorld Activity: A case study for developing an activity."""
-
-from gi.repository import Gtk
 import logging
+import os
 
-from gettext import gettext as _
+from gi.repository import GObject
+from gi.repository import GdkPixbuf
+from gi.repository import Gdk
+from gi.repository import Gtk
 
 from sugar3.activity import activity
-from sugar3.graphics.toolbarbox import ToolbarBox
 from sugar3.activity.widgets import ActivityButton
 from sugar3.activity.widgets import TitleEntry
 from sugar3.activity.widgets import StopButton
 from sugar3.activity.widgets import ShareButton
 from sugar3.activity.widgets import DescriptionItem
+from sugar3.graphics.toolbarbox import ToolbarBox
 
-class HelloWorldActivity(activity.Activity):
-    """HelloWorldActivity class as specified in activity.info"""
+from globals import data, BUNDLE_PATH, IMGSIZE
+from option import Option, OptionButton
 
+SEPARATION = data['configs']['separation']
+MAX_PER_LINE = data['configs']['max_per_line']
+LINES = data['configs']['lines']
+
+
+class ComunicateActivity(activity.Activity):
     def __init__(self, handle):
-        """Set up the HelloWorld activity."""
         activity.Activity.__init__(self, handle)
 
-        # we do not have collaboration features
-        # make the share option insensitive
         self.max_participants = 1
+        self.build_toolbar()
 
-        # toolbar with the new toolbar redesign
+        self.evbox = Gtk.EventBox()
+        self.evbox.set_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self.evbox.connect('button-press-event', self.button_pressed)
+        self.canvasbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.evbox.add(self.canvasbox)
+        self.set_canvas(self.evbox)
+        self.canvasbox.show()
+        self.evbox.show()
+
+        # Top part
+        top = Gtk.Box()
+        self.sentence = Gtk.Box()
+        self.sentence.show()
+        top.pack_start(self.sentence, True, True, 0)
+        self.delbtn = OptionButton({'title': 'Borrar',
+                                    'image': 'OPUESTOS/no.png'})
+        top.pack_start(self.delbtn,
+                       False, True, 0)
+        top.show()
+        self.canvasbox.pack_start(top, True, True, 0)
+
+        GObject.timeout_add(1000, self.update_selection)
+        self.fill_board()
+        self.selected = 0
+        self.phrases = []
+
+    def button_pressed(self, widget, event=None):
+        logging.error(self.selected)
+        if self.selected - 1 == -1:
+            logging.error('Remove!')
+            self.sentence.remove(self.phrases[-1])
+            del(self.phrases[-1])
+        else:
+            option = Option(self.buttons[self.selected - 1].opt)
+            self.phrases.append(option)
+            self.sentence.pack_start(option, False, False, SEPARATION)
+
+    def update_selection(self):
+        if self.selected == -1:
+            self.delbtn.select()
+        else:
+            self.buttons[self.selected].select()
+        self.selected += 1
+        if self.selected == len(self.buttons):
+            self.selected = -1
+        GObject.timeout_add(1000, self.update_selection)
+
+    def build_toolbar(self):
         toolbar_box = ToolbarBox()
 
         activity_button = ActivityButton(self)
@@ -58,7 +110,7 @@ class HelloWorldActivity(activity.Activity):
         share_button = ShareButton(self)
         toolbar_box.toolbar.insert(share_button, -1)
         share_button.show()
-        
+
         separator = Gtk.SeparatorToolItem()
         separator.props.draw = False
         separator.set_expand(True)
@@ -72,7 +124,25 @@ class HelloWorldActivity(activity.Activity):
         self.set_toolbar_box(toolbar_box)
         toolbar_box.show()
 
-        # label with the text, make the string translatable
-        label = Gtk.Label(_("Hello World!"))
-        self.set_canvas(label)
-        label.show()
+        self.removable = []
+
+    def fill_board(self):
+        self.buttons = []
+        for i in self.removable:
+            self.canvasbox.remove(i)
+
+        elem = 0
+        box = None
+        for i in data['boards'][0]['options']:
+            if elem == 0:
+                box = Gtk.Box()
+                box.show()
+                self.canvasbox.pack_start(box, True, True, SEPARATION)
+                self.removable.append(box)
+            option = OptionButton(i)
+            option.connect('clicked', self.button_pressed)
+            self.buttons.append(option)
+            box.pack_start(option, True, True, SEPARATION)
+            elem += 1
+            if elem == 3:
+                elem = 0

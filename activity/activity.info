@@ -1,7 +1,7 @@
 [Activity]
-name = HelloWorld
-activity_version = 6
-bundle_id = org.sugarlabs.HelloWorld
-exec = sugar-activity activity.HelloWorldActivity
+name = Comunicate
+activity_version = 1
+bundle_id = org.sugarlabs.Comunicate
+exec = sugar-activity activity.ComunicateActivity
 icon = activity-helloworld
 license = GPLv2+
