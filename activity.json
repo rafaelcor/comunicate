@@ -5,31 +5,55 @@
       "options": [
         {
           "title": "Yo",
-          "image": "VARIOS/yo.png"
+          "image": "VARIOS/yo.png",
+          "board": "main"
         },
 
         {
           "title": "No quiero",
-          "image": "ACCIONES/no_quiero.png"
+          "image": "ACCIONES/no_quiero.png",
+          "board": "acciones"
         },
 
         {
-          "title": "Hacer la cama",
-          "image": "hacer_la_cama.png"
+          "title": "Quiero",
+          "image": "VARIOS/tener.png",
+          "board": "acciones"
+        }
+      ]
+    },
+    {
+      "title": "acciones",
+      "options": [
+        {
+          "title": "Saltar",
+          "board": null,
+          "image": "ACCIONES/saltar.png"
         },
         {
-          "title": "Hacer cosquillas",
-          "image": "ACCIONES/hacer_cosquillas.png"
+          "title": "Saltar",
+          "board": null,
+          "image": "ACCIONES/saltar.png"
         },
-
         {
-          "title": "Hacer clic",
-          "image": "hacer_clic.png"
+          "title": "Saltar",
+          "board": null,
+          "image": "ACCIONES/saltar.png"
         },
-
         {
-          "title": "Hacer las compras",
-          "image": "ACCIONES/hacer la compra.png"
+          "title": "Saltar",
+          "board": null,
+          "image": "ACCIONES/saltar.png"
+        },
+        {
+          "title": "Saltar",
+          "board": null,
+          "image": "ACCIONES/saltar.png"
+        },
+        {
+          "title": "Saltar",
+          "board": null,
+          "image": "ACCIONES/saltar.png"
         }
       ]
     }

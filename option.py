@@ -27,7 +27,7 @@ from globals import IMGSIZE, BUNDLE_PATH
 class Option(Gtk.Box):
     def __init__(self, option):
         super(Option, self).__init__(orientation=Gtk.Orientation.VERTICAL)
-
+        self.option = option
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(BUNDLE_PATH, 'images/%s' % option['image']),
             IMGSIZE, IMGSIZE)

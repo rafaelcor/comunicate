@@ -19,11 +19,17 @@ import os
 
 from gi.repository import Gdk
 
-from sugar3.activity import activity
-from sugar3.graphics import style
-
-BUNDLE_PATH = activity.get_bundle_path()
 SCREEN_HEIGHT = Gdk.Screen().height()
-DIVIDED_HEIGHT = (SCREEN_HEIGHT - style.GRID_CELL_SIZE) / 3
+
+try:
+    from sugar3.activity import activity
+    from sugar3.graphics import style
+
+    BUNDLE_PATH = activity.get_bundle_path()
+    DIVIDED_HEIGHT = (SCREEN_HEIGHT - style.GRID_CELL_SIZE) / 3
+except:
+    BUNDLE_PATH = os.path.abspath(".")
+    DIVIDED_HEIGHT = (SCREEN_HEIGHT - 50) / 3
+
 IMGSIZE = DIVIDED_HEIGHT * 0.80
 data = json.load(open(os.path.join(BUNDLE_PATH, 'activity.json'), 'r'))
