@@ -21,7 +21,7 @@ from gi.repository import Gdk
 from gi.repository import Gtk
 from gi.repository import GObject
 
-from globals import IMGSIZE, BUNDLE_PATH, SPEED
+from globals import IMGSIZE, BUNDLE_PATH, SPEED, data
 
 
 class Option(Gtk.Box):
@@ -35,6 +35,8 @@ class Option(Gtk.Box):
         image.show()
         self.pack_start(image, True, True, 0)
         label = Gtk.Label(option['title'])
+        s, color = Gdk.Color.parse(data['configs']['fgcolor'])
+        label.modify_fg(Gtk.StateType.NORMAL, color)
         label.show()
         self.pack_start(label, False, True, 0)
         self.show()
@@ -50,10 +52,10 @@ class OptionButton(Gtk.Button):
         self.show()
 
     def select(self):
-        s, color = Gdk.Color.parse('#0000FF')
+        s, color = Gdk.Color.parse(data['configs']['btnselect'])
         self.modify_bg(Gtk.StateType.NORMAL, color)
         GObject.timeout_add(SPEED, self.unselect)
 
     def unselect(self):
-        s, color = Gdk.Color.parse('#FF0000')
+        s, color = Gdk.Color.parse(data['configs']['btncolor'])
         self.modify_bg(Gtk.StateType.NORMAL, color)

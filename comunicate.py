@@ -51,6 +51,8 @@ confirm = {
 class Canvas(Gtk.EventBox):
     def __init__(self):
         Gtk.EventBox.__init__(self)
+        s, color = Gdk.Color.parse(data['configs']['bgcolor'])
+        self.modify_bg(Gtk.StateType.NORMAL, color)
         self.confirm = False
         self.speech = BaseAudioGrab()
         self.set_events(Gdk.EventMask.BUTTON_PRESS_MASK)
@@ -134,6 +136,8 @@ class Canvas(Gtk.EventBox):
         GObject.timeout_add(SPEED, self.update_selection)
 
     def fill_board(self, board):
+        if len(self.boards) == 0:
+            self.boards = [board]
         if self.boards[-1] != board:
             self.boards.append(board)
         self.selected = -1
