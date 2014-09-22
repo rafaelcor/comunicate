@@ -33,3 +33,5 @@ except:
 
 IMGSIZE = DIVIDED_HEIGHT * 0.80
 data = json.load(open(os.path.join(BUNDLE_PATH, 'activity.json'), 'r'))
+
+SPEED = data['configs']['speed'] * 1000

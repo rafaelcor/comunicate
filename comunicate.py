@@ -23,7 +23,7 @@ from gi.repository import Gdk
 from gi.repository import Gtk
 
 from espeak import BaseAudioGrab
-from globals import data
+from globals import data, SPEED
 from option import Option, OptionButton
 
 SEPARATION = data['configs']['separation']
@@ -72,8 +72,9 @@ class Canvas(Gtk.EventBox):
         top.show()
         self.canvasbox.pack_start(top, True, True, 0)
 
-        GObject.timeout_add(1000, self.update_selection)
+        GObject.timeout_add(SPEED, self.update_selection)
         self.removable = []
+        self.boards = [data['boards'][0]]
         self.fill_board(data['boards'][0])
         self.phrases = []
 
@@ -87,6 +88,8 @@ class Canvas(Gtk.EventBox):
         if selection == -1:
             self.sentence.remove(self.phrases[-1])
             del(self.phrases[-1])
+            del(self.boards[-1])
+            self.fill_board(self.boards[-1])
         else:
             if selection == -2:
                 opt = self.buttons[-1].opt
@@ -128,9 +131,11 @@ class Canvas(Gtk.EventBox):
         self.selected += 1
         if self.selected == len(self.buttons):
             self.selected = -1
-        GObject.timeout_add(1000, self.update_selection)
+        GObject.timeout_add(SPEED, self.update_selection)
 
     def fill_board(self, board):
+        if self.boards[-1] != board:
+            self.boards.append(board)
         self.selected = -1
         self.buttons = []
         for i in self.removable:
@@ -150,7 +155,7 @@ class Canvas(Gtk.EventBox):
             self.buttons.append(option)
             box.pack_start(option, True, True, SEPARATION)
             elem += 1
-            if elem == 3:
+            if elem == MAX_PER_LINE:
                 elem = 0
 
 

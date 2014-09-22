@@ -60,7 +60,8 @@
   ],
   "configs": {
     "separation": 10,
-    "max_per_line": 3,
-    "lines": 2
+    "max_per_line": 4,
+    "lines": 2,
+    "speed": 1
   }
 }
