@@ -66,6 +66,8 @@
     "bgcolor": "#FFFFFF",
     "fgcolor": "#000000",
     "btncolor": "#00FFFF",
-    "btnselect": "#0000FF"
+    "btnselect": "#0000FF",
+    "font-family": "DejaVu LGC Sans",
+    "font-size": 30
   }
 }

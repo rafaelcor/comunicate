@@ -20,8 +20,9 @@ from gi.repository import GdkPixbuf
 from gi.repository import Gdk
 from gi.repository import Gtk
 from gi.repository import GObject
+from gi.repository import Pango
 
-from globals import IMGSIZE, BUNDLE_PATH, SPEED, data
+from globals import FONT_SIZE, FONT_FAMILY, IMGSIZE, BUNDLE_PATH, SPEED, data
 
 
 class Option(Gtk.Box):
@@ -35,6 +36,8 @@ class Option(Gtk.Box):
         image.show()
         self.pack_start(image, True, True, 0)
         label = Gtk.Label(option['title'])
+        label.modify_font(
+            Pango.FontDescription('%s %d' % (FONT_FAMILY, FONT_SIZE)))
         s, color = Gdk.Color.parse(data['configs']['fgcolor'])
         label.modify_fg(Gtk.StateType.NORMAL, color)
         label.show()
@@ -46,16 +49,19 @@ class OptionButton(Gtk.Button):
     def __init__(self, option):
         super(OptionButton, self).__init__()
         self.opt = option
+        self.wrapper = Gtk.EventBox()
         self.option = Option(option)
-        self.add(self.option)
+        self.wrapper.add(self.option)
+        self.wrapper.show()
+        self.add(self.wrapper)
         self.unselect()
         self.show()
 
     def select(self):
         s, color = Gdk.Color.parse(data['configs']['btnselect'])
-        self.modify_bg(Gtk.StateType.NORMAL, color)
+        self.wrapper.modify_bg(Gtk.StateType.NORMAL, color)
         GObject.timeout_add(SPEED, self.unselect)
 
     def unselect(self):
         s, color = Gdk.Color.parse(data['configs']['btncolor'])
-        self.modify_bg(Gtk.StateType.NORMAL, color)
+        self.wrapper.modify_bg(Gtk.StateType.NORMAL, color)

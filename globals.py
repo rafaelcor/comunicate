@@ -19,7 +19,8 @@ import os
 
 from gi.repository import Gdk
 
-SCREEN_HEIGHT = Gdk.Screen().height()
+screen = Gdk.Screen.get_default()
+SCREEN_HEIGHT = screen.height()
 
 try:
     from sugar3.activity import activity
@@ -31,7 +32,11 @@ except:
     BUNDLE_PATH = os.path.abspath(".")
     DIVIDED_HEIGHT = (SCREEN_HEIGHT - 50) / 3
 
-IMGSIZE = DIVIDED_HEIGHT * 0.80
 data = json.load(open(os.path.join(BUNDLE_PATH, 'activity.json'), 'r'))
+
+FONT_FAMILY = data['configs']['font-family']
+FONT_SIZE = data['configs']['font-size']
+
+IMGSIZE = DIVIDED_HEIGHT * 0.90 - FONT_SIZE * 2
 
 SPEED = data['configs']['speed'] * 1000

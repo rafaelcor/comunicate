@@ -168,5 +168,6 @@ if __name__ == "__main__":
     window.connect('destroy', Gtk.main_quit)
     canvas = Canvas()
     window.add(canvas)
+    window.maximize()
     window.show()
     Gtk.main()
