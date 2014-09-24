@@ -37,6 +37,6 @@ data = json.load(open(os.path.join(BUNDLE_PATH, 'activity.json'), 'r'))
 FONT_FAMILY = data['configs']['font-family']
 FONT_SIZE = data['configs']['font-size']
 
-IMGSIZE = DIVIDED_HEIGHT * 0.90 - FONT_SIZE * 2
+IMGSIZE = DIVIDED_HEIGHT * 0.90 - FONT_SIZE * 4
 
 SPEED = data['configs']['speed'] * 1000

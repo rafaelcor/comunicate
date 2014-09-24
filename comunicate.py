@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Copyright 2014 Daniel Francis
@@ -35,8 +36,8 @@ confirm = {
     'title': 'confirm',
     'options': [
         {
-            'title': 'Si',
-            'image': './VARIOS/sí.png',
+            'title': 'Sí',
+            'image': './VARIOS/si.png',
             'board': None
         },
         {
@@ -98,7 +99,7 @@ class Canvas(Gtk.EventBox):
             else:
                 opt = self.buttons[selection].opt
             if self.confirm:
-                if opt["title"] == 'Si':
+                if opt["title"] == 'Sí':
                     self.speak()
                 self.confirm = False
                 self.fill_board(data['boards'][0])
