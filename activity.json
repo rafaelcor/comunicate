@@ -4,21 +4,73 @@
       "title": "main",
       "options": [
         {
-          "title": "Yo",
+          "title": "Personas",
           "image": "VARIOS/yo.png",
-          "board": "main"
+          "board": "personas",
+          "add": false
         },
 
         {
-          "title": "No quiero",
-          "image": "ACCIONES/no_quiero.png",
-          "board": "acciones"
+          "title": "Acciones",
+          "image": "ACCIONES/adios.png",
+          "board": "acciones",
+          "add": false
+
         },
 
         {
-          "title": "Quiero",
-          "image": "VARIOS/tener.png",
-          "board": "acciones"
+          "title": "Objetos",
+          "image": "OBJETOS/calculadora.png",
+          "board": "objetos",
+          "add": false
+        },
+        {
+          "title": "Confirmar",
+          "image": "VARIOS/si.png",
+          "board": null,
+          "add": false
+        }
+      ]
+    },
+    {
+      "title": "personas",
+      "options": [
+        {
+          "title": "Yo",
+          "board": "main",
+          "image": "VARIOS/yo.png",
+          "add": true
+
+        },
+        {
+          "title": "Saltar",
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
+        },
+        {
+          "title": "Saltar",
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
+        },
+        {
+          "title": "Saltar",
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
+        },
+        {
+          "title": "Saltar",
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
+        },
+        {
+          "title": "Saltar",
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
         }
       ]
     },
@@ -26,34 +78,87 @@
       "title": "acciones",
       "options": [
         {
-          "title": "Saltar",
-          "board": null,
-          "image": "ACCIONES/saltar.png"
+          "title": "Quiero",
+          "board": "main",
+          "image": "VARIOS/tener.png",
+          "add": true
+        },
+        {
+          "title": "No Quiero",
+          "board": "main",
+          "image": "ACCIONES/no_quiero.png",
+          "add": true
         },
         {
           "title": "Saltar",
-          "board": null,
-          "image": "ACCIONES/saltar.png"
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
         },
         {
           "title": "Saltar",
-          "board": null,
-          "image": "ACCIONES/saltar.png"
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
         },
         {
           "title": "Saltar",
-          "board": null,
-          "image": "ACCIONES/saltar.png"
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
         },
         {
           "title": "Saltar",
-          "board": null,
-          "image": "ACCIONES/saltar.png"
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
         },
         {
           "title": "Saltar",
-          "board": null,
-          "image": "ACCIONES/saltar.png"
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
+        }
+      ]
+    },
+    {
+      "title": "objetos",
+      "options": [
+        {
+          "title": "un botón",
+          "board": "main",
+          "image": "OBJETOS/pulsador.png",
+          "add": true
+        },
+        {
+          "title": "Saltar",
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
+        },
+        {
+          "title": "Saltar",
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
+        },
+        {
+          "title": "Saltar",
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
+        },
+        {
+          "title": "Saltar",
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
+        },
+        {
+          "title": "Saltar",
+          "board": "main",
+          "image": "ACCIONES/saltar.png",
+          "add": true
         }
       ]
     }

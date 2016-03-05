@@ -106,10 +106,16 @@ class Canvas(Gtk.EventBox):
                 self.clear_sentence()
                 return
             option = Option(opt)
-            self.phrases.append(option)
-            self.sentence.pack_start(option, False, False, SEPARATION)
+            #self.phrases.append(option)
+            #self.sentence.pack_start(option, False, False, SEPARATION) #### SEE
+
+            if opt["add"]:
+                self.phrases.append(option)
+                self.sentence.pack_start(option, False, False, SEPARATION) #### SEE
+                print opt["board"]
             if opt["board"] is not None:
                 self.fill_board(self.get_board(opt["board"]))
+
             else:
                 self.fill_board(confirm)
                 self.confirm = True

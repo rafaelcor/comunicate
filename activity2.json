@@ -1,0 +1,73 @@
+{
+  "boards": [
+    {
+      "title": "main",
+      "options": [
+        {
+          "title": "Yo",
+          "image": "VARIOS/yo.png",
+          "board": "main"
+        },
+
+        {
+          "title": "No quiero",
+          "image": "ACCIONES/no_quiero.png",
+          "board": "acciones"
+        },
+
+        {
+          "title": "Quiero",
+          "image": "VARIOS/tener.png",
+          "board": "acciones"
+        }
+      ]
+    },
+    {
+      "title": "acciones",
+      "options": [
+        {
+          "title": "Saltar",
+          "board": null,
+          "image": "ACCIONES/saltar.png"
+        },
+        {
+          "title": "Saltar",
+          "board": null,
+          "image": "ACCIONES/saltar.png"
+        },
+        {
+          "title": "Saltar",
+          "board": null,
+          "image": "ACCIONES/saltar.png"
+        },
+        {
+          "title": "Saltar",
+          "board": null,
+          "image": "ACCIONES/saltar.png"
+        },
+        {
+          "title": "Saltar",
+          "board": null,
+          "image": "ACCIONES/saltar.png"
+        },
+        {
+          "title": "Saltar",
+          "board": null,
+          "image": "ACCIONES/saltar.png"
+        }
+      ]
+    }
+  ],
+  "configs": {
+    "separation": 10,
+    "max_per_line": 4,
+    "lines": 2,
+    "speed": 1,
+    "bgcolor": "#FFFFFF",
+    "fgcolor": "#000000",
+    "btncolor": "#00FFFF",
+    "btnselect": "#0000FF",
+    "font-family": "DejaVu LGC Sans",
+    "font-size": 15
+  }
+}
