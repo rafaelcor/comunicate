@@ -72,6 +72,7 @@ class Canvas(Gtk.EventBox):
                                     'image': 'OPUESTOS/no.png'})
         top.pack_start(self.delbtn,
                        False, True, 0)
+
         top.show()
         self.canvasbox.pack_start(top, True, True, 0)
 
