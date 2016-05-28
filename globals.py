@@ -32,7 +32,8 @@ except:
     BUNDLE_PATH = os.path.abspath(".")
     DIVIDED_HEIGHT = (SCREEN_HEIGHT - 50) / 3
 
-data = json.load(open(os.path.join(BUNDLE_PATH, 'activity.json'), 'r'))
+DATA_FILE_SRC = 'activity.json'
+data = json.load(open(os.path.join(BUNDLE_PATH, DATA_FILE_SRC), 'r'))
 
 FONT_FAMILY = data['configs']['font-family']
 FONT_SIZE = data['configs']['font-size']

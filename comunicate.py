@@ -84,7 +84,7 @@ class Canvas(Gtk.EventBox):
 
     def get_board(self, title):
         for board in data["boards"]:
-            if board['title'] == title:
+            if board['id'] == title:
                 return board
 
     def button_pressed(self, widget, event=None):

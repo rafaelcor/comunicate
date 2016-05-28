@@ -1,29 +1,29 @@
 {
   "boards": [
     {
-      "title": "main",
+      "id": 0,
       "options": [
         {
           "title": "Yo",
           "image": "VARIOS/yo.png",
-          "board": "main"
+          "board": 0
         },
 
         {
           "title": "No quiero",
           "image": "ACCIONES/no_quiero.png",
-          "board": "acciones"
+          "board": 1
         },
 
         {
           "title": "Quiero",
           "image": "VARIOS/tener.png",
-          "board": "acciones"
+          "board": 1
         }
       ]
     },
     {
-      "title": "acciones",
+      "id": 1,
       "options": [
         {
           "title": "Saltar",
@@ -68,6 +68,7 @@
     "btncolor": "#00FFFF",
     "btnselect": "#0000FF",
     "font-family": "DejaVu LGC Sans",
-    "font-size": 15
+    "font-size": 15,
+    "max_id": 0
   }
 }
