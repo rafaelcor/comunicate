@@ -60,7 +60,7 @@ class Editor(Gtk.Window):
         buttonAddElement.connect("clicked", self.addElement)
         buttonAddGroup.connect("clicked", self.addGroup)
         buttonRemoveElement.connect("clicked", self.removeElement)
-        buttonRemoveGroup.connect("clicked", self.addElement)
+        buttonRemoveGroup.connect("clicked", self.removeElement)
 
         self.image = Gtk.Image()
         edit = Gtk.Button.new_from_icon_name("document-edit",
@@ -79,6 +79,7 @@ class Editor(Gtk.Window):
         labelbox.pack_start(self.speak_check, False, False, 0)
 
         self.box = Gtk.HPaned()
+        #print dir(self.box)
         self.box.pack1(treebox, False, False)
         self.box.pack2(labelbox, True, False)
         
@@ -144,16 +145,73 @@ class Editor(Gtk.Window):
             
     
     def addElement(self, widget):
-        pass
-    
+        addElementWindow = Gtk.Dialog("Crear elemento", self, 0,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             Gtk.STOCK_OK, Gtk.ResponseType.OK))
+        elementsGrid = Gtk.Grid()
+        
+        labelText = Gtk.Label("Texto: ")
+        entryText = Gtk.Entry()
+        
+        filterImage = Gtk.FileFilter()
+        filterImage.set_name("Image files")
+        filterImage.add_mime_type("image/*")
+        
+        labelImage = Gtk.Label("IMG: ")
+        buttonChooseImage = Gtk.FileChooserButton("title")
+        buttonChooseImage.add_filter(filterImage)
+        
+        checkButtonShow = Gtk.CheckButton("Mostrar en el resultado??")
+        
+        elementsGrid.add(labelText)
+        elementsGrid.attach(entryText, 1, 0, 1, 1)
+        elementsGrid.attach_next_to(labelImage, labelText, Gtk.PositionType.BOTTOM, 1, 1)
+        elementsGrid.attach_next_to(buttonChooseImage, labelImage, Gtk.PositionType.RIGHT, 1, 1)
+        elementsGrid.attach(checkButtonShow, 0, 2, 2, 1)
+        
+        addElementWindow.get_content_area().add(elementsGrid)
+        addElementWindow.show_all()
+        print dir(addElementWindow)
+        if addElementWindow.run() == Gtk.ResponseType.OK:
+            model, tree_iter = self.treeview.get_selection().get_selected()
+            board = model.get_value(tree_iter,1)
+            options = self.get_board(board)["options"]
+            options.append({
+                "image": buttonChooseImage.get_filename().split("images/")[1],
+                "title": entryText.get_text(),
+                "add": checkButtonShow.get_active(),
+                "board": board
+            })
+            self.treestore.clear()
+            self.build_tree()
+        
+        addElementWindow.close()
+        
+        
     def addGroup(self, widget):
         pass
     
-    def removeElement(self, widget):  
-        pass
-    
-    def removeGroup(self, widget):
-        pass
+    def removeElement(self, widget):
+        
+        model, tree_iter = self.treeview.get_selection().get_selected()
+        board = model.get_value(tree_iter, 1)
+        index = model.get_value(tree_iter, 2)
+        title = self.get_board(board)["options"][index]["title"]
+        
+        #print .get_children()
+
+        removeElementWindow = Gtk.MessageDialog(self, 0, Gtk.MessageType.QUESTION,
+            Gtk.ButtonsType.YES_NO, u"¿Realmente desea elminar " + title + "?")
+        
+        if removeElementWindow.run() == Gtk.ResponseType.YES:
+            del self.get_board(board)["options"][index]
+            #TODO: fix cursor on remove
+            self.treestore.clear()
+            self.build_tree()
+            self.save()
+            
+        
+        removeElementWindow.close()
     
     def toggleSpeak(self, widget):
         model, tree_iter = self.treeview.get_selection().get_selected()
