@@ -166,15 +166,14 @@ class Editor(Gtk.Window):
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
              Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
 
-        
-
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             print("Open clicked")
             print("File selected: " + dialog.get_filename())
             self.data = json.load(open(dialog.get_filename(), 'r'))
+            self.treestore.clear()
             self.build_tree()
-            #TODO: refresh treeview on open file
+            self.treeview.set_cursor(0) # Let's avoid bugs
         elif response == Gtk.ResponseType.CANCEL:
             print("Cancel clicked")
 
@@ -204,9 +203,11 @@ class Editor(Gtk.Window):
 
     def tree_selection(self, widget):
         model, tree_iter = widget.get_selection().get_selected()
-        name = model.get_value(tree_iter,0)
-        board = model.get_value(tree_iter,1)
-        index = model.get_value(tree_iter,2)
+        if tree_iter is None: # Should never happen
+            return
+        name = model.get_value(tree_iter, 0)
+        board = model.get_value(tree_iter, 1)
+        index = model.get_value(tree_iter, 2)
         data = self.get_board(board)["options"][index]
         self.image.set_from_file("images/" + data["image"])
         self.speak_check.set_active(data["add"])
@@ -269,7 +270,6 @@ class Editor(Gtk.Window):
         
         addElementWindow.get_content_area().add(elementsGrid)
         addElementWindow.show_all()
-        print dir(addElementWindow)
         if addElementWindow.run() == Gtk.ResponseType.OK:
             model, tree_iter = self.treeview.get_selection().get_selected()
             board = model.get_value(tree_iter,1)
