@@ -207,9 +207,9 @@ class Editor(Gtk.Window):
         name = model.get_value(tree_iter,0)
         board = model.get_value(tree_iter,1)
         index = model.get_value(tree_iter,2)
-        self.data = self.get_board(board)["options"][index]
-        self.image.set_from_file("images/" + self.data["image"])
-        self.speak_check.set_active(self.data["add"])
+        data = self.get_board(board)["options"][index]
+        self.image.set_from_file("images/" + data["image"])
+        self.speak_check.set_active(data["add"])
 
     def item_edit(self, widget, path, text):
         board = self.get_board(self.treestore[path][1])
@@ -235,10 +235,10 @@ class Editor(Gtk.Window):
             model, tree_iter = self.treeview.get_selection().get_selected()
             board = model.get_value(tree_iter,1)
             index = model.get_value(tree_iter,2)
-            self.data = self.get_board(board)["options"][index]
-            self.data["image"] = chooser.get_filename().split("images/")[1]
+            data = self.get_board(board)["options"][index]
+            data["image"] = chooser.get_filename().split("images/")[1]
             self.save()
-            self.image.set_from_file("images/" + self.data["image"])
+            self.image.set_from_file("images/" + data["image"])
         
         chooser.close()
 
@@ -314,8 +314,8 @@ class Editor(Gtk.Window):
         model, tree_iter = self.treeview.get_selection().get_selected()
         board = model.get_value(tree_iter,1)
         index = model.get_value(tree_iter,2)
-        self.data = self.get_board(board)["options"][index]
-        self.data["add"] = widget.get_active()
+        data = self.get_board(board)["options"][index]
+        data["add"] = widget.get_active()
         self.save()
     
     def save(self):
