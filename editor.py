@@ -201,6 +201,22 @@ class Editor(Gtk.Window):
                 if option["board"] != 0:
                     self.build_tree(option["board"], handle)
 
+    def find_element(self, parent_id, index, rows=None):
+        if rows is None:
+            rows = iter(self.treestore)
+        try:
+            while True:
+                row = rows.next()
+                if row[1] == parent_id and row[2] == index:
+                    return row
+                children = row.iterchildren()
+                if children is not None:
+                    result = self.find_element(parent_id, index, children)
+                    if result is not None:
+                        return result
+        except:
+            return
+
     def tree_selection(self, widget):
         model, tree_iter = widget.get_selection().get_selected()
         if tree_iter is None: # Should never happen
@@ -284,12 +300,15 @@ class Editor(Gtk.Window):
                 "image": buttonChooseImage.get_filename().split("images/")[1],
                 "title": entryText.get_text(),
                 "add": checkButtonShow.get_active(),
-                "board": board
+                "board": 0
             })
             self.treestore.clear()
             self.build_tree()
             
-            self.treeview.set_cursor(0) # FIXME: Should be set to the new element
+            index = len(options)-1
+            element = self.find_element(board, index)
+            self.treeview.expand_to_path(element.path)
+            self.treeview.set_cursor(element.path)
         
         addElementWindow.close()
         
@@ -312,20 +331,35 @@ class Editor(Gtk.Window):
         board = model.get_value(tree_iter, 1)
         index = model.get_value(tree_iter, 2)
         title = self.get_board(board)["options"][index]["title"]
-        
-        #print .get_children()
 
         removeElementWindow = Gtk.MessageDialog(self, 0, Gtk.MessageType.QUESTION,
             Gtk.ButtonsType.YES_NO, u"¿Realmente desea elminar " + title + "?")
         
         if removeElementWindow.run() == Gtk.ResponseType.YES:
             del self.get_board(board)["options"][index]
-            #TODO: fix cursor on remove
+
+            if index > 0:
+                path = Gtk.TreePath(0)
+                for index in xrange(index-1, -1, -1):
+                    previous = self.find_element(board, index)
+                    if previous is not None:
+                        path = previous.path
+                        break
+            else:
+                oldelement = self.find_element(board, index)
+                parent = element.parent
+                if parent is not None:
+                    path = parent.path
+                else:
+                    path = Gtk.TreePath(0)
+
             self.treestore.clear()
             self.build_tree()
+            self.treeview.expand_to_path(path)
+            self.treeview.collapse_row(path)
+            self.treeview.set_cursor(path)
             self.save()
-            
-        
+
         removeElementWindow.close()
     
     def toggleSpeak(self, widget):
