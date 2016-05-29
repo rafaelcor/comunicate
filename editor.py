@@ -166,15 +166,14 @@ class Editor(Gtk.Window):
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
              Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
 
-        
-
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             print("Open clicked")
             print("File selected: " + dialog.get_filename())
             self.data = json.load(open(dialog.get_filename(), 'r'))
+            self.treestore.clear()
             self.build_tree()
-            #TODO: refresh treeview on open file
+            self.treeview.set_cursor(0) # Let's avoid bugs
         elif response == Gtk.ResponseType.CANCEL:
             print("Cancel clicked")
 
@@ -202,14 +201,32 @@ class Editor(Gtk.Window):
                 if option["board"] != 0:
                     self.build_tree(option["board"], handle)
 
+    def find_element(self, parent_id, index, rows=None):
+        if rows is None:
+            rows = iter(self.treestore)
+        try:
+            while True:
+                row = rows.next()
+                if row[1] == parent_id and row[2] == index:
+                    return row
+                children = row.iterchildren()
+                if children is not None:
+                    result = self.find_element(parent_id, index, children)
+                    if result is not None:
+                        return result
+        except:
+            return
+
     def tree_selection(self, widget):
         model, tree_iter = widget.get_selection().get_selected()
-        name = model.get_value(tree_iter,0)
-        board = model.get_value(tree_iter,1)
-        index = model.get_value(tree_iter,2)
-        self.data = self.get_board(board)["options"][index]
-        self.image.set_from_file("images/" + self.data["image"])
-        self.speak_check.set_active(self.data["add"])
+        if tree_iter is None: # Should never happen
+            return
+        name = model.get_value(tree_iter, 0)
+        board = model.get_value(tree_iter, 1)
+        index = model.get_value(tree_iter, 2)
+        data = self.get_board(board)["options"][index]
+        self.image.set_from_file("images/" + data["image"])
+        self.speak_check.set_active(data["add"])
 
     def item_edit(self, widget, path, text):
         board = self.get_board(self.treestore[path][1])
@@ -235,10 +252,10 @@ class Editor(Gtk.Window):
             model, tree_iter = self.treeview.get_selection().get_selected()
             board = model.get_value(tree_iter,1)
             index = model.get_value(tree_iter,2)
-            self.data = self.get_board(board)["options"][index]
-            self.data["image"] = chooser.get_filename().split("images/")[1]
+            data = self.get_board(board)["options"][index]
+            data["image"] = chooser.get_filename().split("images/")[1]
             self.save()
-            self.image.set_from_file("images/" + self.data["image"])
+            self.image.set_from_file("images/" + data["image"])
         
         chooser.close()
 
@@ -246,6 +263,10 @@ class Editor(Gtk.Window):
         addElementWindow = Gtk.Dialog("Crear elemento", self, 0,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
              Gtk.STOCK_OK, Gtk.ResponseType.OK))
+
+        okButton = addElementWindow.get_widget_for_response(Gtk.ResponseType.OK)
+        okButton.set_sensitive(False)
+
         elementsGrid = Gtk.Grid()
         
         labelText = Gtk.Label("Texto: ")
@@ -258,6 +279,8 @@ class Editor(Gtk.Window):
         labelImage = Gtk.Label("IMG: ")
         buttonChooseImage = Gtk.FileChooserButton("title")
         buttonChooseImage.add_filter(filterImage)
+        buttonChooseImage.connect("file-set", self._addElementImageChoose, okButton, entryText)
+        entryText.connect("changed", self._addElementEntry, okButton, buttonChooseImage)
         
         checkButtonShow = Gtk.CheckButton("Mostrar en el resultado??")
         
@@ -269,7 +292,6 @@ class Editor(Gtk.Window):
         
         addElementWindow.get_content_area().add(elementsGrid)
         addElementWindow.show_all()
-        print dir(addElementWindow)
         if addElementWindow.run() == Gtk.ResponseType.OK:
             model, tree_iter = self.treeview.get_selection().get_selected()
             board = model.get_value(tree_iter,1)
@@ -278,13 +300,28 @@ class Editor(Gtk.Window):
                 "image": buttonChooseImage.get_filename().split("images/")[1],
                 "title": entryText.get_text(),
                 "add": checkButtonShow.get_active(),
-                "board": board
+                "board": 0
             })
             self.treestore.clear()
             self.build_tree()
+            
+            index = len(options)-1
+            element = self.find_element(board, index)
+            self.treeview.expand_to_path(element.path)
+            self.treeview.set_cursor(element.path)
         
         addElementWindow.close()
         
+    def _addElementEntry(self, widget, button, chooser):
+        if len(widget.get_text()) > 0 and chooser.get_filename() is not None:
+            button.set_sensitive(True)
+        else:
+            button.set_sensitive(False)
+        
+    def _addElementImageChoose(self, widget, button, entry):
+        if len(entry.get_text()) > 0:
+            button.set_sensitive(True)
+
     def addGroup(self, widget):
         pass
     
@@ -294,28 +331,43 @@ class Editor(Gtk.Window):
         board = model.get_value(tree_iter, 1)
         index = model.get_value(tree_iter, 2)
         title = self.get_board(board)["options"][index]["title"]
-        
-        #print .get_children()
 
         removeElementWindow = Gtk.MessageDialog(self, 0, Gtk.MessageType.QUESTION,
             Gtk.ButtonsType.YES_NO, u"¿Realmente desea elminar " + title + "?")
         
         if removeElementWindow.run() == Gtk.ResponseType.YES:
             del self.get_board(board)["options"][index]
-            #TODO: fix cursor on remove
+
+            if index > 0:
+                path = Gtk.TreePath(0)
+                for index in xrange(index-1, -1, -1):
+                    previous = self.find_element(board, index)
+                    if previous is not None:
+                        path = previous.path
+                        break
+            else:
+                oldelement = self.find_element(board, index)
+                parent = element.parent
+                if parent is not None:
+                    path = parent.path
+                else:
+                    path = Gtk.TreePath(0)
+
             self.treestore.clear()
             self.build_tree()
+            self.treeview.expand_to_path(path)
+            self.treeview.collapse_row(path)
+            self.treeview.set_cursor(path)
             self.save()
-            
-        
+
         removeElementWindow.close()
     
     def toggleSpeak(self, widget):
         model, tree_iter = self.treeview.get_selection().get_selected()
         board = model.get_value(tree_iter,1)
         index = model.get_value(tree_iter,2)
-        self.data = self.get_board(board)["options"][index]
-        self.data["add"] = widget.get_active()
+        data = self.get_board(board)["options"][index]
+        data["add"] = widget.get_active()
         self.save()
     
     def save(self):
