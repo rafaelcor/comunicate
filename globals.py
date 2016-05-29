@@ -59,6 +59,7 @@ UI_INFO = """
   </menubar>
   <toolbar name='ToolBar'>
     <toolitem action='FileNew' />
+    <toolitem action='FileOpen' />
     <toolitem action='FileQuit' />
   </toolbar>
 </ui>

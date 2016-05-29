@@ -19,11 +19,13 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from gi.repository import Gtk, Gdk
-from globals import data, UI_INFO
+from globals import data as Gdata
+from globals import UI_INFO
 import json
 
 class Editor(Gtk.Window):
     def __init__(self):
+        self.data = Gdata # Gdata
         Gtk.Window.__init__(self)
         
         mainVbox = Gtk.VBox()
@@ -130,14 +132,15 @@ class Editor(Gtk.Window):
         action_group.add_action(action_filenew)
 
         action_fileopen = Gtk.Action("FileOpen", None, None, Gtk.STOCK_OPEN)
+        action_fileopen.connect("activate", self.on_menu_open)
         action_group.add_action(action_fileopen)
 
-        action_group.add_actions([
-            ("FileNew", None, "New File", None, "Create new foo",
-             self.on_menu_new),
-            ("FileOpen", None, "Open File", None, "Create new goo",
-             self.on_menu_open),
-        ])
+        #action_group.add_actions([
+         #   ("FileNew", None, "New File", None, "Create new foo",
+          #   self.on_menu_new),
+           # ("FileOpen", None, "Open File", None, "Create new goo",
+            # self.on_menu_open),
+        #])
 
         action_filequit = Gtk.Action("FileQuit", None, None, Gtk.STOCK_QUIT)
         action_filequit.connect("activate", self.on_menu_file_quit)
@@ -158,13 +161,34 @@ class Editor(Gtk.Window):
         pass
 
     def on_menu_open(self, widget):
+        dialog = Gtk.FileChooserDialog("Please choose a file", self,
+            Gtk.FileChooserAction.OPEN,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+
+        
+
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            print("Open clicked")
+            print("File selected: " + dialog.get_filename())
+            self.data = json.load(open(dialog.get_filename(), 'r'))
+            self.build_tree()
+            #TODO: refresh treeview on open file
+        elif response == Gtk.ResponseType.CANCEL:
+            print("Cancel clicked")
+
+        dialog.destroy()
         pass
 
     def on_menu_file_quit(self, widget):
         Gtk.main_quit()
-     
+    
+    def on_menu_preferences(self, widget):
+		pass
+    
     def get_board(self, title):
-        for board in data["boards"]:
+        for board in self.data["boards"]:
             if board['id'] == title:
                 return board
 
@@ -183,9 +207,9 @@ class Editor(Gtk.Window):
         name = model.get_value(tree_iter,0)
         board = model.get_value(tree_iter,1)
         index = model.get_value(tree_iter,2)
-        data = self.get_board(board)["options"][index]
-        self.image.set_from_file("images/" + data["image"])
-        self.speak_check.set_active(data["add"])
+        self.data = self.get_board(board)["options"][index]
+        self.image.set_from_file("images/" + self.data["image"])
+        self.speak_check.set_active(self.data["add"])
 
     def item_edit(self, widget, path, text):
         board = self.get_board(self.treestore[path][1])
@@ -211,10 +235,10 @@ class Editor(Gtk.Window):
             model, tree_iter = self.treeview.get_selection().get_selected()
             board = model.get_value(tree_iter,1)
             index = model.get_value(tree_iter,2)
-            data = self.get_board(board)["options"][index]
-            data["image"] = chooser.get_filename().split("images/")[1]
+            self.data = self.get_board(board)["options"][index]
+            self.data["image"] = chooser.get_filename().split("images/")[1]
             self.save()
-            self.image.set_from_file("images/" + data["image"])
+            self.image.set_from_file("images/" + self.data["image"])
         
         chooser.close()
 
@@ -290,13 +314,13 @@ class Editor(Gtk.Window):
         model, tree_iter = self.treeview.get_selection().get_selected()
         board = model.get_value(tree_iter,1)
         index = model.get_value(tree_iter,2)
-        data = self.get_board(board)["options"][index]
-        data["add"] = widget.get_active()
+        self.data = self.get_board(board)["options"][index]
+        self.data["add"] = widget.get_active()
         self.save()
     
     def save(self):
         save_file = open("activity.json", "w")
-        json.dump(data, save_file)
+        json.dump(self.data, save_file)
     
 
 Editor()

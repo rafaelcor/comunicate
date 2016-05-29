@@ -8,15 +8,13 @@
     "bgcolor": "#FFFFFF",
     "separation": 10,
     "font-family": "DejaVu LGC Sans",
-    "max_id": 0,
+    "max_id": -1,
     "fgcolor": "#000000",
     "speed": 1
   },
   "boards": [
     {
-      "id": 0,
-      "options": [
-      ]
+      
     }
   ]
 } 
