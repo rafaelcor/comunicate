@@ -247,6 +247,10 @@ class Editor(Gtk.Window):
         addElementWindow = Gtk.Dialog("Crear elemento", self, 0,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
              Gtk.STOCK_OK, Gtk.ResponseType.OK))
+
+        okButton = addElementWindow.get_widget_for_response(Gtk.ResponseType.OK)
+        okButton.set_sensitive(False)
+
         elementsGrid = Gtk.Grid()
         
         labelText = Gtk.Label("Texto: ")
@@ -259,6 +263,8 @@ class Editor(Gtk.Window):
         labelImage = Gtk.Label("IMG: ")
         buttonChooseImage = Gtk.FileChooserButton("title")
         buttonChooseImage.add_filter(filterImage)
+        buttonChooseImage.connect("file-set", self._addElementImageChoose, okButton, entryText)
+        entryText.connect("changed", self._addElementEntry, okButton, buttonChooseImage)
         
         checkButtonShow = Gtk.CheckButton("Mostrar en el resultado??")
         
@@ -282,9 +288,21 @@ class Editor(Gtk.Window):
             })
             self.treestore.clear()
             self.build_tree()
+            
+            self.treeview.set_cursor(0) # FIXME: Should be set to the new element
         
         addElementWindow.close()
         
+    def _addElementEntry(self, widget, button, chooser):
+        if len(widget.get_text()) > 0 and chooser.get_filename() is not None:
+            button.set_sensitive(True)
+        else:
+            button.set_sensitive(False)
+        
+    def _addElementImageChoose(self, widget, button, entry):
+        if len(entry.get_text()) > 0:
+            button.set_sensitive(True)
+
     def addGroup(self, widget):
         pass
     
