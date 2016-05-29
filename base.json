@@ -1,0 +1,20 @@
+{
+  "configs": {
+    "font-size": 15,
+    "btnselect": "#0000FF",
+    "max_per_line": 4,
+    "lines": 2,
+    "btncolor": "#00FFFF",
+    "bgcolor": "#FFFFFF",
+    "separation": 10,
+    "font-family": "DejaVu LGC Sans",
+    "max_id": -1,
+    "fgcolor": "#000000",
+    "speed": 1
+  },
+  "boards": [
+    {
+      
+    }
+  ]
+} 

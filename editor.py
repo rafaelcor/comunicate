@@ -18,14 +18,35 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from gi.repository import Gtk
-from globals import data
+from gi.repository import Gtk, Gdk
+from globals import data, UI_INFO
 import json
 
 class Editor(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self)
+        
+        mainVbox = Gtk.VBox()
+        
+        #menu things
+        action_group = Gtk.ActionGroup("my_actions")
+        
+        self.add_file_menu_actions(action_group)
+        self.add_edit_menu_actions(action_group)
 
+        uimanager = self.create_ui_manager()
+        uimanager.insert_action_group(action_group)
+
+        menubar = uimanager.get_widget("/MenuBar")
+
+        menusBox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        menusBox.pack_start(menubar, False, False, 0)
+
+        toolbar = uimanager.get_widget("/ToolBar")
+        menusBox.pack_start(toolbar, False, False, 0)
+        #
+        mainVbox.pack_start(menusBox, False, False, 0)
+        
         self.treestore = Gtk.TreeStore(str, int, int)
         self.build_tree()
 
@@ -79,15 +100,69 @@ class Editor(Gtk.Window):
         labelbox.pack_start(self.speak_check, False, False, 0)
 
         self.box = Gtk.HPaned()
-        #print dir(self.box)
+
         self.box.pack1(treebox, False, False)
         self.box.pack2(labelbox, True, False)
         
-        self.add(self.box)
+        mainVbox.pack_start(self.box, False, False, 0)
+        
+        self.add(mainVbox)
         self.connect("destroy", Gtk.main_quit)
         self.show_all()
         self.treeview.grab_focus()
+     
+    def create_ui_manager(self):
+        uimanager = Gtk.UIManager()
 
+        # Throws exception if something went wrong
+        uimanager.add_ui_from_string(UI_INFO)
+
+        # Add the accelerator group to the toplevel window
+        accelgroup = uimanager.get_accel_group()
+        self.add_accel_group(accelgroup)
+        return uimanager
+    
+    def add_file_menu_actions(self, action_group):
+        action_filemenu = Gtk.Action("FileMenu", "Archivo", None, None)
+        action_group.add_action(action_filemenu)
+
+        action_filenew = Gtk.Action("FileNew", None, None, Gtk.STOCK_NEW)
+        action_group.add_action(action_filenew)
+
+        action_fileopen = Gtk.Action("FileOpen", None, None, Gtk.STOCK_OPEN)
+        action_group.add_action(action_fileopen)
+
+        action_group.add_actions([
+            ("FileNew", None, "New File", None, "Create new foo",
+             self.on_menu_new),
+            ("FileOpen", None, "Open File", None, "Create new goo",
+             self.on_menu_open),
+        ])
+
+        action_filequit = Gtk.Action("FileQuit", None, None, Gtk.STOCK_QUIT)
+        action_filequit.connect("activate", self.on_menu_file_quit)
+        action_group.add_action(action_filequit)
+
+    def add_edit_menu_actions(self, action_group):
+        action_group.add_actions([
+            ("EditMenu", None, "Editar"),
+            ("EditCopy", Gtk.STOCK_COPY, None, None, None,
+             None),
+            ("EditPaste", Gtk.STOCK_PASTE, None, None, None,
+             None),
+            ("EditPreferences", None, "Preferencias", "<control><alt>S", None,
+             None)
+        ])
+    
+    def on_menu_new(self, widget):
+        pass
+
+    def on_menu_open(self, widget):
+        pass
+
+    def on_menu_file_quit(self, widget):
+        Gtk.main_quit()
+     
     def get_board(self, title):
         for board in data["boards"]:
             if board['id'] == title:
@@ -142,8 +217,7 @@ class Editor(Gtk.Window):
             self.image.set_from_file("images/" + data["image"])
         
         chooser.close()
-            
-    
+
     def addElement(self, widget):
         addElementWindow = Gtk.Dialog("Crear elemento", self, 0,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
@@ -187,7 +261,6 @@ class Editor(Gtk.Window):
         
         addElementWindow.close()
         
-        
     def addGroup(self, widget):
         pass
     
@@ -225,8 +298,6 @@ class Editor(Gtk.Window):
         save_file = open("activity.json", "w")
         json.dump(data, save_file)
     
-    def minimizeJSON(self):
-        pass
 
 Editor()
 Gtk.main()

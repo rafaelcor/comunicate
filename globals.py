@@ -41,3 +41,25 @@ FONT_SIZE = data['configs']['font-size']
 IMGSIZE = DIVIDED_HEIGHT * 0.90 - FONT_SIZE * 4
 
 SPEED = data['configs']['speed'] * 1000
+
+UI_INFO = """
+<ui>
+  <menubar name='MenuBar'>
+    <menu action='FileMenu'>
+      <menuitem action='FileNew' />
+      <menuitem action='FileOpen' />
+      <separator />
+      <menuitem action='FileQuit' />
+    </menu>
+    <menu action='EditMenu'>
+      <menuitem action='EditCopy' />
+      <menuitem action='EditPaste' />
+      <menuitem action='EditPreferences' />
+    </menu>
+  </menubar>
+  <toolbar name='ToolBar'>
+    <toolitem action='FileNew' />
+    <toolitem action='FileQuit' />
+  </toolbar>
+</ui>
+"""
