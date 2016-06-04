@@ -20,7 +20,7 @@
 
 from gi.repository import Gtk, Gdk
 from globals import data as Gdata
-from globals import UI_INFO
+from globals import UI_INFO, DATA_FILE_SRC
 import json
 
 class Editor(Gtk.Window):
@@ -64,7 +64,7 @@ class Editor(Gtk.Window):
         self.treeview.connect("cursor-changed", self.tree_selection)
 
         buttonAddElement = Gtk.Button("Agregar Elemento")
-        buttonAddGroup = Gtk.Button("Agregar Grupo")
+        buttonAddSubelement = Gtk.Button("Agregar Subelemento")
         buttonRemoveElement = Gtk.Button("Eliminar Elemento")
         buttonRemoveGroup = Gtk.Button("Eliminar Grupo")
         
@@ -76,12 +76,12 @@ class Editor(Gtk.Window):
         treebox = Gtk.VBox()
         treebox.pack_start(treeScrolledWindow, True, True, 0)
         treebox.pack_start(buttonAddElement, False, False, 0)
-        treebox.pack_start(buttonAddGroup, False, False, 0)
+        treebox.pack_start(buttonAddSubelement, False, False, 0)
         treebox.pack_start(buttonRemoveGroup, False, False, 0)
         treebox.pack_start(buttonRemoveElement, False, False, 0)
         
         buttonAddElement.connect("clicked", self.addElement)
-        buttonAddGroup.connect("clicked", self.addGroup)
+        buttonAddSubelement.connect("clicked", self.addSubelement)
         buttonRemoveElement.connect("clicked", self.removeElement)
         buttonRemoveGroup.connect("clicked", self.removeElement)
 
@@ -112,6 +112,7 @@ class Editor(Gtk.Window):
         self.connect("destroy", Gtk.main_quit)
         self.show_all()
         self.treeview.grab_focus()
+        self.set_title("Comunicate editor - " + DATA_FILE_SRC)
      
     def create_ui_manager(self):
         uimanager = Gtk.UIManager()
@@ -169,8 +170,11 @@ class Editor(Gtk.Window):
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             print("Open clicked")
-            print("File selected: " + dialog.get_filename())
-            self.data = json.load(open(dialog.get_filename(), 'r'))
+            global DATA_FILE_SRC
+            DATA_FILE_SRC = dialog.get_filename()
+            print("File selected: " + DATA_FILE_SRC)
+            self.data = json.load(open(DATA_FILE_SRC, 'r'))
+            self.set_title("Comunicate editor - " + DATA_FILE_SRC)
             self.treestore.clear()
             self.build_tree()
             self.treeview.set_cursor(0) # Let's avoid bugs
@@ -259,7 +263,11 @@ class Editor(Gtk.Window):
         
         chooser.close()
 
-    def addElement(self, widget):
+    def addElement(self, widget, board=None):
+        if board is None:
+            model, tree_iter = self.treeview.get_selection().get_selected()
+            board = model.get_value(tree_iter,1)
+
         addElementWindow = Gtk.Dialog("Crear elemento", self, 0,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
              Gtk.STOCK_OK, Gtk.ResponseType.OK))
@@ -293,8 +301,6 @@ class Editor(Gtk.Window):
         addElementWindow.get_content_area().add(elementsGrid)
         addElementWindow.show_all()
         if addElementWindow.run() == Gtk.ResponseType.OK:
-            model, tree_iter = self.treeview.get_selection().get_selected()
-            board = model.get_value(tree_iter,1)
             options = self.get_board(board)["options"]
             options.append({
                 "image": buttonChooseImage.get_filename().split("images/")[1],
@@ -322,8 +328,21 @@ class Editor(Gtk.Window):
         if len(entry.get_text()) > 0:
             button.set_sensitive(True)
 
-    def addGroup(self, widget):
-        pass
+    def addSubelement(self, widget):
+        model, tree_iter = self.treeview.get_selection().get_selected()
+        board = model.get_value(tree_iter,1)
+        index = model.get_value(tree_iter, 2)
+        subboard = self.get_board(board)["options"][index]["board"]
+        if subboard == 0:
+            self.data["configs"]["max_id"] += 1
+            newboard = {
+                "id": self.data["configs"]["max_id"],
+                "options": []
+            }
+            self.data["boards"].append(newboard)
+            self.get_board(board)["options"][index]["board"] = newboard["id"]
+            subboard = newboard["id"]
+        self.addElement(widget, subboard)
     
     def removeElement(self, widget):
         
@@ -347,7 +366,7 @@ class Editor(Gtk.Window):
                         break
             else:
                 oldelement = self.find_element(board, index)
-                parent = element.parent
+                parent = oldelement.parent
                 if parent is not None:
                     path = parent.path
                 else:
@@ -371,7 +390,7 @@ class Editor(Gtk.Window):
         self.save()
     
     def save(self):
-        save_file = open("activity.json", "w")
+        save_file = open(DATA_FILE_SRC, "w")
         json.dump(self.data, save_file)
     
 
