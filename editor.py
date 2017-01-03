@@ -130,6 +130,7 @@ class Editor(Gtk.Window):
         action_group.add_action(action_filemenu)
 
         action_filenew = Gtk.Action("FileNew", None, None, Gtk.STOCK_NEW)
+        action_filenew.connect("activate", self.on_menu_new)
         action_group.add_action(action_filenew)
 
         action_fileopen = Gtk.Action("FileOpen", None, None, Gtk.STOCK_OPEN)
@@ -159,7 +160,33 @@ class Editor(Gtk.Window):
         ])
     
     def on_menu_new(self, widget):
-        pass
+        dialog = Gtk.FileChooserDialog("New file", self,
+            Gtk.FileChooserAction.SAVE,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
+        dialog.set_do_overwrite_confirmation(True)
+
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            print("New clicked")
+            global DATA_FILE_SRC
+            BASE_FILE = open("base.json")
+            BASE_CONTENT = BASE_FILE.read()
+            BASE_FILE.close()
+            DATA_FILE_SRC = dialog.get_filename()
+            DATA_FILE = open(DATA_FILE_SRC, 'w')
+            DATA_FILE.write(BASE_CONTENT)
+            DATA_FILE.close()
+            print("File selected: " + DATA_FILE_SRC)
+            self.data = json.load(open(DATA_FILE_SRC, 'r'))
+            self.set_title("Comunicate editor - " + DATA_FILE_SRC)
+            self.treestore.clear()
+            self.build_tree()
+            self.treeview.set_cursor(0) # Let's avoid bugs
+        elif response == Gtk.ResponseType.CANCEL:
+            print("Cancel clicked")
+
+        dialog.destroy()
 
     def on_menu_open(self, widget):
         dialog = Gtk.FileChooserDialog("Please choose a file", self,
@@ -182,7 +209,6 @@ class Editor(Gtk.Window):
             print("Cancel clicked")
 
         dialog.destroy()
-        pass
 
     def on_menu_file_quit(self, widget):
         Gtk.main_quit()
