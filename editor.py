@@ -137,6 +137,10 @@ class Editor(Gtk.Window):
         action_fileopen.connect("activate", self.on_menu_open)
         action_group.add_action(action_fileopen)
 
+        action_filesaveas = Gtk.Action("FileSaveAs", None, None, Gtk.STOCK_SAVE_AS)
+        action_filesaveas.connect("activate", self.on_menu_saveas)
+        action_group.add_action(action_filesaveas)
+
         #action_group.add_actions([
          #   ("FileNew", None, "New File", None, "Create new foo",
           #   self.on_menu_new),
@@ -171,6 +175,35 @@ class Editor(Gtk.Window):
             print("New clicked")
             global DATA_FILE_SRC
             BASE_FILE = open("base.json")
+            BASE_CONTENT = BASE_FILE.read()
+            BASE_FILE.close()
+            DATA_FILE_SRC = dialog.get_filename()
+            DATA_FILE = open(DATA_FILE_SRC, 'w')
+            DATA_FILE.write(BASE_CONTENT)
+            DATA_FILE.close()
+            print("File selected: " + DATA_FILE_SRC)
+            self.data = json.load(open(DATA_FILE_SRC, 'r'))
+            self.set_title("Comunicate editor - " + DATA_FILE_SRC)
+            self.treestore.clear()
+            self.build_tree()
+            self.treeview.set_cursor(0) # Let's avoid bugs
+        elif response == Gtk.ResponseType.CANCEL:
+            print("Cancel clicked")
+
+        dialog.destroy()
+    
+    def on_menu_saveas(self, widget):
+        dialog = Gtk.FileChooserDialog("Save as", self,
+            Gtk.FileChooserAction.SAVE,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
+        dialog.set_do_overwrite_confirmation(True)
+
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            print("Save as clicked")
+            global DATA_FILE_SRC
+            BASE_FILE = open(DATA_FILE_SRC)
             BASE_CONTENT = BASE_FILE.read()
             BASE_FILE.close()
             DATA_FILE_SRC = dialog.get_filename()

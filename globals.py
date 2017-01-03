@@ -48,6 +48,7 @@ UI_INFO = """
     <menu action='FileMenu'>
       <menuitem action='FileNew' />
       <menuitem action='FileOpen' />
+      <menuitem action='FileSaveAs' />
       <separator />
       <menuitem action='FileQuit' />
     </menu>
