@@ -24,7 +24,7 @@ from gi.repository import Gdk
 from gi.repository import Gtk
 
 from espeak import BaseAudioGrab
-from globals import data, SPEED
+from globals import data, SPEED, DATA_FILE_SRC
 from option import Option, OptionButton
 
 SEPARATION = data['configs']['separation']
@@ -58,6 +58,7 @@ class Canvas(Gtk.EventBox):
         self.speech = BaseAudioGrab()
         self.set_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self.connect('button-press-event', self.button_pressed)
+        self.connect('key-press-event', self.button_pressed)
         self.canvasbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.add(self.canvasbox)
         self.canvasbox.show()
